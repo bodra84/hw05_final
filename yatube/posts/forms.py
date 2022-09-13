@@ -21,4 +21,3 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ('text',)
         help_texts = {'text': 'Текст комментария'}
-
