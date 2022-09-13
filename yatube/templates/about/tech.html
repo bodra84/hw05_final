@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Технологии{% endblock %}
+{% block content %}
+    {% comment %} Колонки с отступом сверху и снизу {% endcomment %}
+    <div class="row">
+        <h4>В данный момент я осваиваю следующие технологии:</h4>
+        <aside class="col-12 col-md-3">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    Python
+                </li>
+                <li class="list-group-item">
+                    Django
+                </li>
+                <li class="list-group-item">
+                    Unittest
+                </li>
+            </ul>
+        </aside>
+        <article class="col-12 col-md-9">
+            <p>По мере овладевания мной новых технологий, данный список будет
+                пополняться</p>
+        </article>
+    </div>
+{% endblock %} 

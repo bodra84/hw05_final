@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Ошибка 403:Ошибка доступа{% endblock %}
+{% block content %}
+    <h1>Ошибка 403:Ошибка доступа! У вас недостаточно прав.</h1>
+    <a href="{% url 'posts:index' %}">На главную страницу</a>
+{% endblock %} 
