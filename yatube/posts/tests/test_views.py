@@ -103,23 +103,16 @@ class PostsPagesTests(TestCase):
             response = self.authorized_user.get(page)
             first_object = response.context['page_obj'][0]
             with self.subTest(page=page):
-                self.assertEqual(first_object.author, self.user)
-                self.assertEqual(first_object.text, self.post.text)
-                self.assertEqual(first_object.id, self.post.id)
-                self.assertEqual(first_object.group, self.group_dogs)
-                self.assertEqual(first_object.image, self.post.image)
+                self.assertEqual(first_object, self.post,
+                                 'Пост из запроса не соответствует тестовому!')
 
     def test_posts_detail_page_show_correct_context(self):
         """Шаблон posts/detail.html сформирован с правильным контекстом."""
         page = reverse('posts:post_detail', kwargs={'post_id': self.post.id})
         response = self.authorized_user.get(page)
         post = response.context['post']
-        self.assertEqual(post, self.post)
-        self.assertEqual(post.author, self.user)
-        self.assertEqual(post.text, self.post.text)
-        self.assertEqual(post.id, self.post.id)
-        self.assertEqual(post.group, self.group_dogs)
-        self.assertEqual(post.image, self.post.image)
+        self.assertEqual(post, self.post,
+                         'Пост из запроса не соответствует тестовому!')
 
     def test_posts_create_post_edit_page_show_correct_context(self):
         """Шаблон posts/create.html сформирован с правильным контекстом."""

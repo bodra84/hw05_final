@@ -1,5 +1,6 @@
 import shutil
 import tempfile
+from http import HTTPStatus
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -127,3 +128,32 @@ class PostFormTests(TestCase):
         title_help_text = self.form.fields['group'].help_text
         self.assertEquals(title_help_text,
                           'Выберите группу поста или оставьте поле пустым')
+
+    def test_cant_create_post_with_not_image_file(self):
+        """Проверяем невозможность создания поста при загрузке файла, отличного
+        от файла изображения."""
+        post_count = Post.objects.count()
+        uploaded = SimpleUploadedFile(name='test.doc',
+                                      content=self.small_gif,
+                                      content_type='application/msword')
+        form_data = {
+            'text': ' ',
+            'group': self.group_dogs.id,
+            'image': uploaded,
+        }
+        response = self.authorized_user.post(
+            reverse('posts:post_create'), data=form_data, follow=True)
+        self.assertEqual(Post.objects.count(), post_count)
+        self.assertFormError(
+            response,
+            'form',
+            'image',
+            ('Формат файлов \'doc\' не поддерживается. Поддерживаемые форматы'
+             ' файлов: \'bmp, dib, gif, tif, tiff, jfif, jpe, jpg, jpeg, pbm,'
+             ' pgm, ppm, pnm, png, apng, blp, bufr, cur, pcx, dcx, dds, ps,'
+             ' eps, fit, fits, fli, flc, ftc, ftu, gbr, grib, h5, hdf, jp2,'
+             ' j2k, jpc, jpf, jpx, j2c, icns, ico, im, iim, mpg, mpeg, mpo,'
+             ' msp, palm, pcd, pdf, pxr, psd, bw, rgb, rgba, sgi, ras, tga,'
+             ' icb, vda, vst, webp, wmf, emf, xbm, xpm\'.')
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
