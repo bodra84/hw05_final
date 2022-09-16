@@ -156,10 +156,6 @@ class PostsPagesTests(TestCase):
                                    kwargs={'slug': self.group_cats.slug}):
                     post = response.context['page_obj'][0]
                     self.assertEqual(post, test_post)
-                    self.assertEqual(post.author, test_post.author)
-                    self.assertEqual(post.text, test_post.text)
-                    self.assertEqual(post.id, test_post.id)
-                    self.assertEqual(post.group, test_post.group)
                 else:
                     posts = response.context['page_obj']
                     self.assertNotIn(post, posts)

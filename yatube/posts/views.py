@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .common import page_list
 from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post
 
@@ -17,9 +16,7 @@ def index(request):
      Также в context передается значение поля title страницы html.
      """
     post_list = Post.objects.select_related('author', 'group').all()
-    paginator = Paginator(post_list, settings.COUNT_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = page_list(request, post_list)
     title = 'Последние обновления на сайте'
     context = {
         'page_obj': page_obj,
@@ -38,9 +35,7 @@ def group_posts(request, slug):
      """
     group = get_object_or_404(Group, slug=slug)
     post_group_list = group.posts.select_related('author').all()
-    paginator = Paginator(post_group_list, settings.COUNT_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = page_list(request, post_group_list)
     title = 'Записи сообщества:'
     context = {
         'page_obj': page_obj,
@@ -56,14 +51,9 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_author = author.posts.prefetch_related('group').all()
     count_posts = post_author.count()
-    paginator = Paginator(post_author, settings.COUNT_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    if request.user.is_authenticated:
-        user = User.objects.get(username=request.user)
-        following = Follow.objects.filter(user=user, author=author).exists()
-    else:
-        following = True
+    page_obj = page_list(request, post_author)
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author).exists()
     context = {
         'author': author,
         'page_obj': page_obj,
@@ -146,9 +136,7 @@ def follow_index(request):
     user = request.user
     post_follow_list = Post.objects.filter(
         author__following__user=user).select_related('author', 'group')
-    paginator = Paginator(post_follow_list, settings.COUNT_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = page_list(request, post_follow_list)
     title = 'Мои подписки'
     context = {
         'page_obj': page_obj,

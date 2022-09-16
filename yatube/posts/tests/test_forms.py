@@ -94,16 +94,14 @@ class PostFormTests(TestCase):
             follow=True)
         self.assertRedirects(response, reverse('posts:post_detail',
                                                kwargs={'post_id': post.id}))
-        post_edit = Post.objects.get(id=post.id)
-        self.assertEqual(post_edit.id, post.id)
-        self.assertEqual(post_edit.author, self.user)
-        self.assertEqual(post_edit.text, form_data['text'])
-        self.assertEqual(post_edit.group, self.group_cats)
-        self.assertEqual(post_edit.image, 'posts/small3.gif')
+        self.assertTrue(
+            Post.objects.filter(author=self.user, text=form_data['text'],
+                                group=self.group_cats,
+                                image='posts/small3.gif').exists())
 
     def test_create_new_comment(self):
         """Тестирование отображения нового комментария на странице поста."""
-        comments_count = Comment.objects.filter(id=self.post.id).count()
+        comments_count = Comment.objects.filter(post=self.post.id).count()
         form_data = {
             'text': 'Тестовый комментарий',
         }
@@ -112,7 +110,7 @@ class PostFormTests(TestCase):
             data=form_data, follow=True)
         self.assertRedirects(response, reverse('posts:post_detail', kwargs={
             'post_id': self.post.id}))
-        self.assertEqual(Comment.objects.filter(id=self.post.id).count(),
+        self.assertEqual(Comment.objects.filter(post=self.post.id).count(),
                          comments_count + 1)
         self.assertTrue(
             Comment.objects.filter(author=self.user, text=form_data['text'],
