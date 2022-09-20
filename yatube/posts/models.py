@@ -84,3 +84,13 @@ class Follow(models.Model):
         """Класс описывает порядок сортировки и задает удобочитаемое имя."""
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "author"],
+                name="unique_user_author"
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='user_cannot_follow_yourself'
+            )
+        ]
