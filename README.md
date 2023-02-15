@@ -6,6 +6,11 @@ Yatube это социальная сеть с авторизацией, пер�
 - Python 3.7
 
 - Django 2.2.19
+- SQlite
+- Unittest
+- HTML
+- CSS
+- Bootstrap
 ### Запуск проекта в dev-режиме /
 ### Launching a project in dev mode
 - Установите и активируйте виртуальное окружение / install and activate the virtual environment
